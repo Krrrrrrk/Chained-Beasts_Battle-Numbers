@@ -4,6 +4,16 @@ Floating damage numbers for **Chained Beasts**. I made this to show actual HP lo
 
 The numbers use larger pixel digits with a **white inner outline and black outer outline**, plus a short pop, rise and fade. I've tested version **0.1.1** in Solo play.
 
+## Screenshots
+
+**Outgoing damage** — pale yellow numbers show HP lost by an enemy.
+
+![Pale yellow pixel damage number above an enemy](assets/screenshots/outgoing-damage.png)
+
+**Incoming damage** — red numbers show HP lost by my player.
+
+![Red pixel damage number above the player](assets/screenshots/incoming-damage.png)
+
 ## Download and install
 
 1. Install [BepInEx 6 build 791 — Windows x64 Unity IL2CPP](https://builds.bepinex.dev/projects/bepinex_be/791/BepInEx-Unity.IL2CPP-win-x64-6.0.0-be.791%2Bb782da4.zip) in your Chained Beasts game folder if you don't already have it.
