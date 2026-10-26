@@ -14,8 +14,8 @@ internal static class RuntimeState
     internal static bool Ready, Failed;
     internal static readonly ReceiptBuffer Pending = new(96);
     internal static long Captured;
-    internal static bool Supported(NetworkManager manager) => manager != null && manager.IsListening && manager.IsServer &&
-        GameManager.InstanceExists && GameManager.Instance.CurrentGameMode == GameMode.Solo;
+    internal static bool Supported(NetworkManager manager) => manager != null && manager.IsListening && (manager.IsServer || manager.IsConnectedClient) &&
+        GameManager.InstanceExists && GameManager.Instance.CurrentGameMode is GameMode.Solo or GameMode.Local or GameMode.Online;
     internal static void Fail(Exception e)
     {
         Ready = false; Pending.Clear();
@@ -42,7 +42,7 @@ internal static class DamageObserver
         try
         {
             if (__instance.__rpc_exec_stage != NetworkBehaviour.__RpcExecStage.Execute ||
-                isInternalDamageSource || !RuntimeState.Supported(__instance.NetworkManager)) return;
+                isInternalDamageSource || !RuntimeState.Supported(__instance.NetworkManager) || !__instance.IsServer) return;
             var victim = __instance.TryCast<NetworkAgent>();
             var objects = __instance.NetworkManager.SpawnManager?.SpawnedObjects;
             if (victim == null || objects is null || !objects.ContainsKey(damageSourceID)) return;
@@ -50,7 +50,10 @@ internal static class DamageObserver
             if (source == null) return;
             __state.Source = Identify(source);
             __state.Victim = Identify(victim);
-            if (ReceiptRules.Classify(__state.Source, __state.Victim) == Relationship.Excluded) return;
+            var attacker = source.TryCast<Player>(); var defender = victim.TryCast<Player>();
+            __state.SourcePlayer = attacker is not null; __state.VictimPlayer = defender is not null;
+            __state.SourceOwner = attacker?.OwnerClientId ?? ulong.MaxValue; __state.VictimOwner = defender?.OwnerClientId ?? ulong.MaxValue;
+            if (!(attacker is not null && __state.Victim.HostileNpc || defender is not null && __state.Source.HostileNpc)) return;
             var p = victim.agentCenter + Vector3.up * .55f;
             __state.Position = new WorldPoint(p.x, p.y, p.z);
             __state.VictimHandle = __instance.Pointer.ToInt64();
@@ -72,6 +75,7 @@ internal static class DamageObserver
             // The native NetworkVariable has committed. These are old/new HP, NOT attempted damage.
             // Capture before base health listeners and before Foundation ReceiptAfter.
             if (_capture is null || !_capture.Commit(__instance.Pointer.ToInt64(), oldHealth, newHealth, Time.unscaledTimeAsDouble, out var receipt)) return;
+            NetworkNumbers.Publish(receipt, _capture.ActiveFrame);
             if (ReceiptRules.Visible(receipt, RuntimeState.Settings))
             { RuntimeState.Pending.Add(receipt); Interlocked.Increment(ref RuntimeState.Captured); }
         }

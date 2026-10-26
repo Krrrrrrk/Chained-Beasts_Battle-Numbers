@@ -7,6 +7,7 @@
     <BepInExRoot>$(ChainedBeastsGameDir)\BepInEx</BepInExRoot>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="$(BepInExRoot)\interop\Unity.Collections.dll" Private="false"><Aliases>GameCollections</Aliases></Reference>
     <Reference Include="$(BepInExRoot)\core\BepInEx.Core.dll" Private="false" />
     <Reference Include="$(BepInExRoot)\core\BepInEx.Unity.IL2CPP.dll" Private="false" />
     <Reference Include="$(BepInExRoot)\core\0Harmony.dll" Private="false" />

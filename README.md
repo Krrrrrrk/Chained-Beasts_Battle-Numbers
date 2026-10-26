@@ -4,6 +4,12 @@ Floating damage numbers for **Chained Beasts**. I made this to show actual HP lo
 
 The numbers use larger pixel digits with a **white inner outline and black outer outline**, plus a short pop, rise and fade. I've tested version **0.1.1** in Solo play.
 
+The current **0.2.0 source** adds experimental host/client support. The host
+measures committed HP loss and sends cosmetic receipts to each player owner;
+clients show their own outgoing/incoming hits. Both host and client need 0.2.0
+for client numbers. This version is build checked but still awaits a manual
+multiplayer test. [Download the experimental 0.2.0 DLL](https://github.com/Krrrrrrk/Chained-Beasts_Battle-Numbers/releases/download/v0.2.0/ChainedBeasts.BattleNumbers.dll) from its [prerelease](https://github.com/Krrrrrrk/Chained-Beasts_Battle-Numbers/releases/tag/v0.2.0). The stable-install instructions below remain 0.1.1.
+
 ## Screenshots
 
 **Outgoing damage** — pale yellow numbers show HP lost by an enemy.
@@ -45,7 +51,7 @@ Use `TextScale` to resize the numbers (0.5–2.5), and `Lifetime` to change thei
 ## Known issues and limits
 
 - Some hits on bosses do not show damage numbers. I'm leaving that as a known issue for now; I'm not tackling boss-specific coverage.
-- **Solo only.** Multiplayer hosts and clients display no numbers.
+- Published **0.1.1 is Solo-only**. Experimental 0.2.0 supports host/client receipts, awaiting a manual two-PC test. A 0.2.0 client needs a 0.2.0 host. Foundation/Terms & Contusions remain optional.
 - Friendly, environmental, internal/self and unattributed damage is excluded. Some status or area effects may not retain a usable attacker identity.
 - Up to 96 numbers can be shown at once; extreme bursts replace the oldest numbers.
 

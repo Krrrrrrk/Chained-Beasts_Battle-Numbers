@@ -11,7 +11,7 @@ public sealed class Plugin : BasePlugin
 {
     public const string Guid = "local.chainedbeasts.battlenumbers";
     public const string Name = "Chained Beasts Battle Numbers";
-    public const string Version = "0.1.1";
+    public const string Version = "0.2.0";
     private Harmony _harmony;
     private NumbersController _controller;
     public override void Load()
@@ -26,7 +26,7 @@ public sealed class Plugin : BasePlugin
             Config.Bind("Display", "OutgoingColor", "#FFF0A0", "Six-digit #RRGGBB; invalid values use pale yellow.").Value,
             Config.Bind("Display", "IncomingColor", "#FF5555", "Six-digit #RRGGBB; invalid values use red.").Value,
             Config.Bind("Diagnostics", "Enabled", false, "Optional bounded aggregate diagnostics, every ten seconds.").Value);
-        Log.LogInfo($"Battle Numbers {Version}; Enabled={RuntimeState.Settings.Enabled}; Solo server observation only");
+        Log.LogInfo($"Battle Numbers {Version}; Enabled={RuntimeState.Settings.Enabled}; server-confirmed HP receipts, local-player filtering on host and clients");
         if (!RuntimeState.Settings.Enabled) return;
         _harmony = new Harmony(Guid + ".observer");
         try

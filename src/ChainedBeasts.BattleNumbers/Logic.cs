@@ -57,9 +57,12 @@ public sealed class ReceiptCapture
         public Actor Source, Victim;
         public WorldPoint Position;
         public bool Eligible;
+        public ulong SourceOwner, VictimOwner;
+        public bool SourcePlayer, VictimPlayer;
         internal readonly CommitLatch Latch = new();
     }
     private Frame _current;
+    public Frame ActiveFrame => _current;
     private long _sequence;
     public Frame Enter() { var frame = new Frame { Parent = _current }; _current = frame; return frame; }
     public void Exit(Frame frame) { if (frame is not null) _current = frame.Parent; }

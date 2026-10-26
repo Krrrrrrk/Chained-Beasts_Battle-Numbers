@@ -25,6 +25,7 @@ public sealed class NumbersController : MonoBehaviour
         {
             if (!_audited) { NativeSafety.Audit(); _audited = true; RuntimeState.Ready = true; }
             var manager = NetworkManager.Singleton;
+            NetworkNumbers.Tick(manager);
             var supported = RuntimeState.Supported(manager);
             var session = supported ? manager.Pointer : IntPtr.Zero;
             var scene = SceneManager.GetActiveScene().GetHashCode();
@@ -85,5 +86,5 @@ public sealed class NumbersController : MonoBehaviour
         Array.Clear(_popups, 0, _popups.Length); Array.Clear(_text, 0, _text.Length);
         RuntimeState.Pending.Clear(); _next = 0; _camera = null;
     }
-    public void OnDestroy() { RuntimeState.Ready = false; Clear(); _renderer?.Dispose(); _renderer = null; }
+    public void OnDestroy() { RuntimeState.Ready = false; NetworkNumbers.Reset(); Clear(); _renderer?.Dispose(); _renderer = null; }
 }
