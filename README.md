@@ -49,6 +49,18 @@ Use `TextScale` to resize the numbers (0.5–2.5), and `Lifetime` to change thei
 - Friendly, environmental, internal/self and unattributed damage is excluded. Some status or area effects may not retain a usable attacker identity.
 - Up to 96 numbers can be shown at once; extreme bursts replace the oldest numbers.
 
+## Bug reports
+
+If you submit a bug report, please attach your **`Player.log` from the session where the problem happened**. It helps me figure out what went wrong.
+
+You can find it here on Windows:
+
+```text
+%USERPROFILE%\AppData\LocalLow\Featherweight Games\ChainedBeasts\Player.log
+```
+
+Please also mention what you were doing when it happened and which other mods you have installed.
+
 ## Build from source
 
 Requires Windows, a .NET SDK that supports **net6.0**, and the installed game's BepInEx loader and generated `BepInEx/interop` assemblies.
