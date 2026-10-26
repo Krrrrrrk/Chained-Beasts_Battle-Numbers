@@ -1,0 +1,85 @@
+using System;
+using System.Threading;
+using BepInEx.Logging;
+using HarmonyLib;
+using Unity.Netcode;
+using UnityEngine;
+
+namespace ChainedBeasts.BattleNumbers;
+
+internal static class RuntimeState
+{
+    internal static DisplaySettings Settings;
+    internal static ManualLogSource Logger;
+    internal static bool Ready, Failed;
+    internal static readonly ReceiptBuffer Pending = new(96);
+    internal static long Captured;
+    internal static bool Supported(NetworkManager manager) => manager != null && manager.IsListening && manager.IsServer &&
+        GameManager.InstanceExists && GameManager.Instance.CurrentGameMode == GameMode.Solo;
+    internal static void Fail(Exception e)
+    {
+        Ready = false; Pending.Clear();
+        if (!Failed) Logger?.LogError("Cosmetic observer disabled: " + e.GetType().Name + ": " + e.Message);
+        Failed = true;
+    }
+}
+internal static class DamageObserver
+{
+    internal const string FoundationOwner = "local.chainedbeasts.modfoundation.runtime";
+    [ThreadStatic] private static ReceiptCapture _capture;
+    internal static void Install(Harmony harmony)
+    {
+        NativeSafety.Install(harmony, "TakeDamageRpc", new[] { typeof(int), typeof(ulong), typeof(bool), typeof(DamageType),
+            typeof(bool), typeof(bool), typeof(bool), typeof(RpcParams) }, 0x6cea50, nameof(RpcBefore), nameof(RpcFinally));
+        NativeSafety.Install(harmony, "OnHealthChanged", new[] { typeof(int), typeof(int) }, 0x6ce460, nameof(HealthCommitted));
+    }
+    private static void RpcBefore(NetworkHealthObject __instance, ulong damageSourceID, bool isInternalDamageSource, out ReceiptCapture.Frame __state)
+    {
+        // Mask even a dispatch nested inside another execution; finalizer always restores it.
+        _capture ??= new ReceiptCapture();
+        __state = _capture.Enter();
+        if (!RuntimeState.Ready) return;
+        try
+        {
+            if (__instance.__rpc_exec_stage != NetworkBehaviour.__RpcExecStage.Execute ||
+                isInternalDamageSource || !RuntimeState.Supported(__instance.NetworkManager)) return;
+            var victim = __instance.TryCast<NetworkAgent>();
+            var objects = __instance.NetworkManager.SpawnManager?.SpawnedObjects;
+            if (victim == null || objects is null || !objects.ContainsKey(damageSourceID)) return;
+            var source = objects[damageSourceID]?.GetComponent<NetworkAgent>();
+            if (source == null) return;
+            __state.Source = Identify(source);
+            __state.Victim = Identify(victim);
+            if (ReceiptRules.Classify(__state.Source, __state.Victim) == Relationship.Excluded) return;
+            var p = victim.agentCenter + Vector3.up * .55f;
+            __state.Position = new WorldPoint(p.x, p.y, p.z);
+            __state.VictimHandle = __instance.Pointer.ToInt64();
+            __state.Eligible = __state.Position.IsFinite;
+        }
+        catch (Exception e) { RuntimeState.Fail(e); }
+    }
+    private static Actor Identify(NetworkAgent agent)
+    {
+        var player = agent.TryCast<Player>();
+        var local = player != null && player.IsOwner && player.OwnerClientId == player.NetworkManager.LocalClientId;
+        return new Actor(agent.NetworkObjectId, local, agent.TryCast<Enemy>() != null && !agent.IsPlayerTeam);
+    }
+    private static void HealthCommitted(NetworkHealthObject __instance, int oldHealth, int newHealth)
+    {
+        if (!RuntimeState.Ready) return;
+        try
+        {
+            // The native NetworkVariable has committed. These are old/new HP, NOT attempted damage.
+            // Capture before base health listeners and before Foundation ReceiptAfter.
+            if (_capture is null || !_capture.Commit(__instance.Pointer.ToInt64(), oldHealth, newHealth, Time.unscaledTimeAsDouble, out var receipt)) return;
+            if (ReceiptRules.Visible(receipt, RuntimeState.Settings))
+            { RuntimeState.Pending.Add(receipt); Interlocked.Increment(ref RuntimeState.Captured); }
+        }
+        catch (Exception e) { RuntimeState.Fail(e); }
+    }
+    private static Exception RpcFinally(Exception __exception, ReceiptCapture.Frame __state)
+    {
+        _capture?.Exit(__state);
+        return __exception; // Never swallow or replace a game/foreign patch exception.
+    }
+}

@@ -1,0 +1,17 @@
+**/bin/
+**/obj/
+artifacts/
+analysis/
+backups/
+*.dll
+*.exe
+*.pdb
+*.log
+*.cfg
+.vs/
+
+# Keep local development notes, workflows and checks out of the public source.
+/docs/
+/scripts/
+/tests/
+/THIRD_PARTY_NOTICES.md

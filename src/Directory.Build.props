@@ -1,0 +1,21 @@
+<Project>
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework><LangVersion>latest</LangVersion>
+    <ImplicitUsings>disable</ImplicitUsings><Nullable>disable</Nullable><Deterministic>true</Deterministic>
+    <ChainedBeastsGameDir Condition="'$(ChainedBeastsGameDir)' == '' and '$(CHAINED_BEASTS_GAME_DIR)' != ''">$(CHAINED_BEASTS_GAME_DIR)</ChainedBeastsGameDir>
+    <ChainedBeastsGameDir Condition="'$(ChainedBeastsGameDir)' == ''">C:\Program Files (x86)\Steam\steamapps\common\Chained Beasts</ChainedBeastsGameDir>
+    <BepInExRoot>$(ChainedBeastsGameDir)\BepInEx</BepInExRoot>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="$(BepInExRoot)\core\BepInEx.Core.dll" Private="false" />
+    <Reference Include="$(BepInExRoot)\core\BepInEx.Unity.IL2CPP.dll" Private="false" />
+    <Reference Include="$(BepInExRoot)\core\0Harmony.dll" Private="false" />
+    <Reference Include="$(BepInExRoot)\core\Il2CppInterop.Runtime.dll" Private="false" />
+    <Reference Include="$(BepInExRoot)\core\Il2CppInterop.Common.dll" Private="false" />
+    <Reference Include="$(BepInExRoot)\interop\Assembly-CSharp.dll" Private="false" />
+    <Reference Include="$(BepInExRoot)\interop\Il2Cppmscorlib.dll" Private="false" />
+    <Reference Include="$(BepInExRoot)\interop\UnityEngine.CoreModule.dll" Private="false" />
+    <Reference Include="$(BepInExRoot)\interop\UnityEngine.IMGUIModule.dll" Private="false" />
+    <Reference Include="$(BepInExRoot)\interop\Unity.Netcode.Runtime.dll" Private="false" />
+  </ItemGroup>
+</Project>

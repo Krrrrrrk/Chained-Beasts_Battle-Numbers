@@ -1,0 +1,3 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup><AssemblyName>ChainedBeasts.BattleNumbers</AssemblyName><RootNamespace>ChainedBeasts.BattleNumbers</RootNamespace><Version>0.1.1</Version></PropertyGroup>
+</Project>
