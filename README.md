@@ -6,9 +6,9 @@ The numbers use the game's **Skranji HUD font**, with a **white inner outline an
 
 **[Download 0.2.2](https://github.com/Krrrrrrk/Chained-Beasts_Battle-Numbers/releases/tag/v0.2.2)** for **Chained Beasts 1.0.2 / Steam build 26231777**. I updated the native hook checks for this game build and kept the HUD-font update.
 
-This is still experimental and needs more testing. Builds and nongame checks pass;
-that isn't exhaustive gameplay verification. Host/client support still needs a
-manual two-PC test. The host measures committed HP loss and sends cosmetic
+- Multiplayer testing has gone well so far, but I still expect weird edge cases.
+
+The host measures committed HP loss and sends cosmetic
 receipts to each player owner, so clients show their own outgoing/incoming hits.
 Install **0.2.2 on both host and clients** for the updated game.
 
@@ -60,7 +60,7 @@ Use `TextScale` to resize the numbers (0.5–2.5), and `Lifetime` to change thei
 ## Known issues and limits
 
 - Some hits on bosses do not show damage numbers. I'm leaving that as a known issue for now; I'm not tackling boss-specific coverage.
-- Multiplayer is experimental and still needs a manual two-PC test. Use matching **0.2.2** installs on the updated game. Foundation/Terms & Contusions remain optional.
+- Use matching **0.2.2** installs on every multiplayer PC. Foundation/Terms & Contusions remain optional.
 - Friendly/PvP, environmental, internal/self and unattributed damage is excluded. Some status or area effects may not retain a usable attacker identity.
 - Up to 96 numbers can be shown at once; extreme bursts replace the oldest numbers.
 
