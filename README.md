@@ -2,15 +2,19 @@
 
 Floating damage numbers for **Chained Beasts**. I made this to show actual HP lost: pale yellow when I hurt an enemy, red when an enemy hurts me.
 
-The numbers use larger pixel digits with a **white inner outline and black outer outline**, plus a short pop, rise and fade. I've tested version **0.1.1** in Solo play.
+The numbers use the game's **Skranji HUD font**, with a **white inner outline and black outer outline**, plus a short pop, rise and fade. If that font isn't loaded, the original pixel digits are used instead. No game font files are bundled or changed.
 
-The current **0.2.0 source** adds experimental host/client support. The host
-measures committed HP loss and sends cosmetic receipts to each player owner;
-clients show their own outgoing/incoming hits. Both host and client need 0.2.0
-for client numbers. This version is build checked but still awaits a manual
-multiplayer test. [Download the experimental 0.2.0 DLL](https://github.com/Krrrrrrk/Chained-Beasts_Battle-Numbers/releases/download/v0.2.0/ChainedBeasts.BattleNumbers.dll) from its [prerelease](https://github.com/Krrrrrrk/Chained-Beasts_Battle-Numbers/releases/tag/v0.2.0). The stable-install instructions below remain 0.1.1.
+**[Download 0.2.2](https://github.com/Krrrrrrk/Chained-Beasts_Battle-Numbers/releases/tag/v0.2.2)** for **Chained Beasts 1.0.2 / Steam build 26231777**. I updated the native hook checks for this game build and kept the HUD-font update.
+
+This is still experimental and needs more testing. Builds and nongame checks pass;
+that isn't exhaustive gameplay verification. Host/client support still needs a
+manual two-PC test. The host measures committed HP loss and sends cosmetic
+receipts to each player owner, so clients show their own outgoing/incoming hits.
+Install **0.2.2 on both host and clients** for the updated game.
 
 ## Screenshots
+
+These screenshots show the older pixel digits. The current default uses the game's HUD font.
 
 **Outgoing damage** — pale yellow numbers show HP lost by an enemy.
 
@@ -22,14 +26,16 @@ multiplayer test. [Download the experimental 0.2.0 DLL](https://github.com/Krrrr
 
 ## Download and install
 
+Use **0.2.2** for game **1.0.2**. Older releases target game 1.0.1.
+
 1. Install [BepInEx 6 build 791 — Windows x64 Unity IL2CPP](https://builds.bepinex.dev/projects/bepinex_be/791/BepInEx-Unity.IL2CPP-win-x64-6.0.0-be.791%2Bb782da4.zip) in your Chained Beasts game folder if you don't already have it.
-2. Download [ChainedBeasts.BattleNumbers.dll](https://github.com/Krrrrrrk/Chained-Beasts_Battle-Numbers/releases/download/v0.1.1/ChainedBeasts.BattleNumbers.dll) from the [latest release](https://github.com/Krrrrrrk/Chained-Beasts_Battle-Numbers/releases/latest).
+2. Download [ChainedBeasts.BattleNumbers.dll](https://github.com/Krrrrrrk/Chained-Beasts_Battle-Numbers/releases/download/v0.2.2/ChainedBeasts.BattleNumbers.dll) from the [0.2.2 release](https://github.com/Krrrrrrk/Chained-Beasts_Battle-Numbers/releases/tag/v0.2.2).
 3. With the game closed, put the DLL in `BepInEx/plugins/BattleNumbers/`. Create that folder if needed, and keep only one copy of the DLL.
 4. Launch the game and start a Solo run.
 
 This is standalone: Mod Foundation and Terms & Contusions are optional. It is cosmetic and does not change damage, health, combat, saves or network authority.
 
-Tested with Chained Beasts 1.0.1 (Steam build 26041777), Unity 6000.3.21f1 and BepInEx 6.0.0-be.791+b782da4. The mod disables itself on an uninspected GameAssembly build.
+Inspected and built against Chained Beasts **1.0.2** (Steam build **26231777**), Unity **6000.3.21f1** and BepInEx **6.0.0-be.791+b782da4**. The mod disables itself on an uninspected GameAssembly build.
 
 ## Settings
 
@@ -40,6 +46,7 @@ First launch creates `BepInEx/config/local.chainedbeasts.battlenumbers.cfg`. Clo
 Enabled = true
 ShowOutgoing = true
 ShowIncoming = true
+UseGameFont = true
 TextScale = 1
 Lifetime = 1
 OutgoingColor = #FFF0A0
@@ -48,11 +55,13 @@ IncomingColor = #FF5555
 
 Use `TextScale` to resize the numbers (0.5–2.5), and `Lifetime` to change their duration in seconds (0.25–3). Colors use `#RRGGBB`. Set `Enabled = false` to disable the mod. Optional diagnostic logging is off by default.
 
+`UseGameFont = true` selects the native HUD font by default. Set it to `false` and restart to use the original pixel digits. The log reports when the HUD font is found, or when fallback rendering is needed. This setting only changes the appearance.
+
 ## Known issues and limits
 
 - Some hits on bosses do not show damage numbers. I'm leaving that as a known issue for now; I'm not tackling boss-specific coverage.
-- Published **0.1.1 is Solo-only**. Experimental 0.2.0 supports host/client receipts, awaiting a manual two-PC test. A 0.2.0 client needs a 0.2.0 host. Foundation/Terms & Contusions remain optional.
-- Friendly, environmental, internal/self and unattributed damage is excluded. Some status or area effects may not retain a usable attacker identity.
+- Multiplayer is experimental and still needs a manual two-PC test. Use matching **0.2.2** installs on the updated game. Foundation/Terms & Contusions remain optional.
+- Friendly/PvP, environmental, internal/self and unattributed damage is excluded. Some status or area effects may not retain a usable attacker identity.
 - Up to 96 numbers can be shown at once; extreme bursts replace the oldest numbers.
 
 ## Bug reports
@@ -83,4 +92,4 @@ With the game closed, remove `BepInEx/plugins/BattleNumbers/ChainedBeasts.Battle
 
 ## License
 
-[MIT](LICENSE). Small BepInEx/IL2CPP hook and component patterns were adapted from [Chained Beasts Mod Foundation](https://github.com/Krrrrrrk/chained-beasts-mod-foundation), also MIT licensed, copyright (c) 2026 Krrrrrrk. The pixel digit designs are original; no game fonts or assets are bundled. This is an unofficial mod.
+[MIT](LICENSE). Small BepInEx/IL2CPP hook and component patterns were adapted from [Chained Beasts Mod Foundation](https://github.com/Krrrrrrk/chained-beasts-mod-foundation), also MIT licensed, copyright (c) 2026 Krrrrrrk. The fallback pixel digit designs are original; no game fonts or assets are bundled. This is an unofficial mod.

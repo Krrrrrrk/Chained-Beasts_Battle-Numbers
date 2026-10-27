@@ -14,7 +14,7 @@ namespace ChainedBeasts.BattleNumbers;
 
 internal static class NativeSafety
 {
-    internal const string GameHash = "72f2892607b0772470caae5db766dc07aaf636c3edfe26cefe019a5b9ddae56b";
+    internal const string GameHash = "ba3ef02fa87da4c41bb27d7610539c9578132204f0fb5713833e2ef93415ce29";
     private static readonly Dictionary<MethodBase, long> Selected = new();
     internal static void VerifyFingerprint()
     {

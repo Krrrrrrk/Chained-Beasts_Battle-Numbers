@@ -11,12 +11,14 @@ public sealed class Plugin : BasePlugin
 {
     public const string Guid = "local.chainedbeasts.battlenumbers";
     public const string Name = "Chained Beasts Battle Numbers";
-    public const string Version = "0.2.0";
+    public const string Version = "0.2.2";
     private Harmony _harmony;
     private NumbersController _controller;
     public override void Load()
     {
         RuntimeState.Logger = Log;
+        RuntimeState.UseGameFont = Config.Bind("Display", "UseGameFont", true,
+            "Reuse the game's loaded Skranji HUD font. Pixel digits are used while unavailable. Restart to apply.").Value;
         RuntimeState.Settings = DisplaySettings.Create(
             Config.Bind("Display", "Enabled", true, "Enable Battle Numbers on next launch.").Value,
             Config.Bind("Display", "ShowOutgoing", true, "Local player damage to hostile NPCs.").Value,
@@ -34,7 +36,7 @@ public sealed class Plugin : BasePlugin
             NativeSafety.VerifyFingerprint();
             DamageObserver.Install(_harmony);
             _controller = AddComponent<NumbersController>();
-            Log.LogInfo("Observer installed; awaiting first-frame patch audit. Pixel rendering requires manual verification.");
+            Log.LogInfo($"Observer installed; awaiting first-frame patch audit. UseGameFont={RuntimeState.UseGameFont}; appearance requires manual verification.");
         }
         catch (Exception e)
         {

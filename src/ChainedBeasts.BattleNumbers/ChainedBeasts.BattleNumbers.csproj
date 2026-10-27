@@ -1,3 +1,9 @@
 <Project Sdk="Microsoft.NET.Sdk">
-  <PropertyGroup><AssemblyName>ChainedBeasts.BattleNumbers</AssemblyName><RootNamespace>ChainedBeasts.BattleNumbers</RootNamespace><Version>0.2.0</Version></PropertyGroup>
+  <PropertyGroup><AssemblyName>ChainedBeasts.BattleNumbers</AssemblyName><RootNamespace>ChainedBeasts.BattleNumbers</RootNamespace><Version>0.2.2</Version></PropertyGroup>
+  <ItemGroup>
+    <Reference Include="$(BepInExRoot)\interop\Unity.TextMeshPro.dll" Private="false" />
+    <Reference Include="$(BepInExRoot)\interop\UnityEngine.UI.dll" Private="false" />
+    <Reference Include="$(BepInExRoot)\interop\UnityEngine.UIModule.dll" Private="false" />
+    <Reference Include="$(BepInExRoot)\interop\UnityEngine.TextRenderingModule.dll" Private="false" />
+  </ItemGroup>
 </Project>
