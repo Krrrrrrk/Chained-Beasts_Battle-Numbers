@@ -3,6 +3,9 @@ namespace ChainedBeasts.BattleNumbers;
 public sealed class NumberPacket
 {
     public int Protocol { get; set; } = 1;
+    // Optional v1 extension: subscribe requests party receipts; accepted advertises host support.
+    // Old peers omit/ignore it and retain owner-only routing.
+    public bool AllPlayers { get; set; }
     public string Kind { get; set; }
     public string Session { get; set; }
     public string Battle { get; set; }
@@ -19,8 +22,10 @@ public sealed class NumberPacket
     public float X { get; set; }
     public float Y { get; set; }
     public float Z { get; set; }
-    public DamageReceipt ForClient(ulong local, double now) => new(Sequence,
-        new Actor(Source, SourcePlayer && SourceOwner == local, SourceEnemy), new Actor(Victim, VictimPlayer && VictimOwner == local, VictimEnemy),
-        ReceiptRules.Classify(new Actor(Source, SourcePlayer && SourceOwner == local, SourceEnemy), new Actor(Victim, VictimPlayer && VictimOwner == local, VictimEnemy)),
-        Loss, new WorldPoint(X, Y, Z), now);
+    public DamageReceipt ForClient(ulong local, double now, bool showOtherPlayers = false)
+    {
+        var source = new Actor(Source, SourcePlayer && SourceOwner == local, SourceEnemy, SourcePlayer);
+        var victim = new Actor(Victim, VictimPlayer && VictimOwner == local, VictimEnemy, VictimPlayer);
+        return new(Sequence, source, victim, ReceiptRules.Classify(source, victim, showOtherPlayers), Loss, new WorldPoint(X, Y, Z), now);
+    }
 }

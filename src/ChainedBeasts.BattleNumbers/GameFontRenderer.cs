@@ -88,7 +88,7 @@ internal sealed class GameFontRenderer : IDisposable
             rect.sizeDelta = new Vector2(1000, 140);
         }
         if (label.text != text) label.text = text;
-        var tint = relationship == Relationship.LocalToHostile ? _settings.OutgoingColor : _settings.IncomingColor;
+        var tint = ReceiptRules.IsOutgoing(relationship) ? _settings.OutgoingColor : _settings.IncomingColor;
         // TMP alpha fades face, outline and underlay together.
         label.color = new Color(tint.R, tint.G, tint.B, frame.Alpha);
         label.rectTransform.anchoredPosition = new Vector2(x, y);

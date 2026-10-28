@@ -13,10 +13,11 @@ internal static class NetworkNumbers
     private const string Channel = "local.chainedbeasts.battlenumbers/v1";
     private static NetworkManager _manager;
     private static CustomMessagingManager.HandleNamedMessageDelegate _handler;
-    private static readonly HashSet<ulong> Subscribers = new();
+    private static readonly NumberSubscriptions Subscribers = new();
+    private static readonly NumberReceiptStream Stream = new();
+    private static bool _oldHostWarning;
     private static string _session;
     private static double _subscribeAt;
-    private static long _last;
     private static string Battle => NetworkSession.InstanceExists && NetworkSession.Instance.runDataManager is { } run
         ? run.runStartTime + ":" + run.RunSeed + ":" + run.CompletedLevels : null;
     internal static void Tick(NetworkManager manager)
@@ -30,7 +31,7 @@ internal static class NetworkNumbers
             manager.CustomMessagingManager.RegisterNamedMessageHandler(Channel, _handler);
         }
         if (!manager.IsServer && _session is null && Time.unscaledTimeAsDouble >= _subscribeAt)
-        { Send(NetworkManager.ServerClientId, new() { Kind = "subscribe" }); _subscribeAt = Time.unscaledTimeAsDouble + 1; }
+        { Send(NetworkManager.ServerClientId, new() { Kind = "subscribe", AllPlayers = RuntimeState.Settings.OtherPlayers }); _subscribeAt = Time.unscaledTimeAsDouble + 1; }
     }
     private static void Send(ulong id, NumberPacket packet)
     {
@@ -51,36 +52,51 @@ internal static class NetworkNumbers
             if (packet is null || packet.Protocol != 1) return;
             if (_manager.IsServer)
             {
-                if (packet.Kind == "subscribe" && sender != _manager.LocalClientId && Subscribers.Count < 4)
-                { Subscribers.Add(sender); Send(sender, new() { Kind = "accepted" }); }
+                if (packet.Kind == "subscribe" && Subscribers.Subscribe(sender, packet.AllPlayers, _manager.LocalClientId, ConnectedClients()))
+                    Send(sender, new() { Kind = "accepted", AllPlayers = true });
                 return;
             }
             if (sender != NetworkManager.ServerClientId) return;
-            if (packet.Kind == "accepted") { if (packet.Session?.Length == 32) { if (_session != packet.Session) _last = 0; _session = packet.Session; } return; }
-            if (packet.Kind != "number" || packet.Session != _session || _session is null || packet.Battle != Battle || packet.Sequence <= _last || packet.Loss <= 0) return;
-            var receipt = packet.ForClient(_manager.LocalClientId, Time.unscaledTimeAsDouble);
-            if (!receipt.Position.IsFinite) return;
-            _last = packet.Sequence;
-            if (ReceiptRules.Visible(receipt, RuntimeState.Settings)) RuntimeState.Pending.Add(receipt);
+            if (packet.Kind == "accepted")
+            {
+                if (Stream.AcceptHandshake(packet))
+                {
+                    _session = Stream.Session;
+                    if (RuntimeState.Settings.OtherPlayers && !Stream.HostSupportsAllPlayers && !_oldHostWarning)
+                    {
+                        _oldHostWarning = true;
+                        RuntimeState.Logger?.LogWarning("Host supports only owner-specific numbers. Update the host to Battle Numbers 0.3.0+ to see friends' damage.");
+                    }
+                }
+                return;
+            }
+            if (!Stream.TryAccept(packet, Battle, _manager.LocalClientId, Time.unscaledTimeAsDouble, RuntimeState.Settings.OtherPlayers, out var receipt)) return;
+            if (ReceiptRules.Visible(receipt, RuntimeState.Settings))
+            { RuntimeState.Pending.Add(receipt); System.Threading.Interlocked.Increment(ref RuntimeState.Captured); }
         }
         catch (Exception e) { RuntimeState.Fail(e); }
     }
     internal static void Publish(DamageReceipt receipt, ReceiptCapture.Frame frame)
     {
         if (_manager?.IsServer != true) return;
-        var clients = _manager.ConnectedClientsIds;
-        var count = clients.Cast<Il2CppSystem.Collections.Generic.IReadOnlyCollection<ulong>>().Count;
-        var live = new HashSet<ulong>(); for (var i = 0; i < count; i++) live.Add(clients[i]);
-        Subscribers.RemoveWhere(id => !live.Contains(id));
+        Subscribers.Retain(ConnectedClients());
         var packet = new NumberPacket { Kind = "number", Battle = Battle, Sequence = receipt.Sequence, Source = receipt.Source.NetworkId, Victim = receipt.Victim.NetworkId,
             SourceOwner = frame.SourceOwner, VictimOwner = frame.VictimOwner, SourcePlayer = frame.SourcePlayer, VictimPlayer = frame.VictimPlayer,
             SourceEnemy = receipt.Source.HostileNpc, VictimEnemy = receipt.Victim.HostileNpc,
             Loss = receipt.HpLost, X = receipt.Position.X, Y = receipt.Position.Y, Z = receipt.Position.Z };
-        foreach (var id in Subscribers) if ((frame.SourcePlayer && frame.SourceOwner == id) || (frame.VictimPlayer && frame.VictimOwner == id)) Send(id, packet);
+        // Routing uses each viewer's preference, never the host's local display switches.
+        foreach (var id in Subscribers.Recipients(packet)) Send(id, packet);
+    }
+    private static HashSet<ulong> ConnectedClients()
+    {
+        var clients = _manager.ConnectedClientsIds;
+        var count = clients.Cast<Il2CppSystem.Collections.Generic.IReadOnlyCollection<ulong>>().Count;
+        var live = new HashSet<ulong>(); for (var i = 0; i < count; i++) live.Add(clients[i]);
+        return live;
     }
     internal static void Reset()
     {
         try { _manager?.CustomMessagingManager?.UnregisterNamedMessageHandler(Channel); } catch { }
-        _manager = null; _handler = null; Subscribers.Clear(); _session = null; _last = 0; _subscribeAt = 0;
+        _manager = null; _handler = null; Subscribers.Clear(); Stream.Reset(); _session = null; _subscribeAt = 0; _oldHostWarning = false;
     }
 }

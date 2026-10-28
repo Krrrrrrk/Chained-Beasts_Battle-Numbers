@@ -52,7 +52,7 @@ internal sealed class PixelNumberRenderer : IDisposable
         var unit = PixelDigits.Unit(scale, frame.Pop);
         var left = (float)Math.Round(x - PixelDigits.TextWidth(text.Length, unit) / 2f);
         var top = (float)Math.Round(Screen.height - y - PixelDigits.Height * unit / 2f);
-        var glyphs = _glyphs[relationship == Relationship.LocalToHostile ? 0 : 1];
+        var glyphs = _glyphs[ReceiptRules.IsOutgoing(relationship) ? 0 : 1];
         // White tint preserves both baked outline colors and the configured face color.
         GUI.color = new Color(1, 1, 1, frame.Alpha);
         for (var i = 0; i < text.Length; i++)

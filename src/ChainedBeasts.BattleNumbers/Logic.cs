@@ -3,8 +3,11 @@ using System.Globalization;
 
 namespace ChainedBeasts.BattleNumbers;
 
-public enum Relationship { Excluded, LocalToHostile, HostileToLocal }
-public readonly record struct Actor(ulong NetworkId, bool LocalPlayer, bool HostileNpc);
+public enum Relationship { Excluded, LocalToHostile, HostileToLocal, OtherPlayerToHostile, HostileToOtherPlayer }
+public readonly record struct Actor(ulong NetworkId, bool LocalPlayer, bool HostileNpc, bool IsPlayer)
+{
+    public Actor(ulong id, bool local, bool hostile) : this(id, local, hostile, local) { }
+}
 public readonly record struct WorldPoint(float X, float Y, float Z)
 {
     public bool IsFinite => float.IsFinite(X) && float.IsFinite(Y) && float.IsFinite(Z);
@@ -14,12 +17,12 @@ public readonly record struct DamageReceipt(long Sequence, Actor Source, Actor V
     int HpLost, WorldPoint Position, double CapturedAt);
 public readonly record struct Tint(float R, float G, float B);
 public readonly record struct DisplaySettings(bool Enabled, bool Outgoing, bool Incoming, float Scale, float Lifetime,
-    Tint OutgoingColor, Tint IncomingColor, bool Diagnostics)
+    Tint OutgoingColor, Tint IncomingColor, bool Diagnostics, bool OtherPlayers = true)
 {
     public static DisplaySettings Create(bool enabled, bool outgoing, bool incoming, float scale, float lifetime,
-        string outgoingColor, string incomingColor, bool diagnostics) => new(enabled, outgoing, incoming,
+        string outgoingColor, string incomingColor, bool diagnostics, bool otherPlayers = true) => new(enabled, outgoing, incoming,
         Clamp(scale, .5f, 2.5f, 1), Clamp(lifetime, .25f, 3, 1),
-        Parse(outgoingColor, new Tint(1, 240f / 255, 160f / 255)), Parse(incomingColor, new Tint(1, 85f / 255, 85f / 255)), diagnostics);
+        Parse(outgoingColor, new Tint(1, 240f / 255, 160f / 255)), Parse(incomingColor, new Tint(1, 85f / 255, 85f / 255)), diagnostics, otherPlayers);
     private static float Clamp(float n, float min, float max, float fallback) => float.IsFinite(n) ? Math.Clamp(n, min, max) : fallback;
     public static Tint Parse(string value, Tint fallback)
     {
@@ -30,12 +33,19 @@ public readonly record struct DisplaySettings(bool Enabled, bool Outgoing, bool 
 }
 public static class ReceiptRules
 {
-    public static Relationship Classify(Actor source, Actor victim) => source.NetworkId == victim.NetworkId ? Relationship.Excluded :
+    public static Relationship Classify(Actor source, Actor victim, bool includeOtherPlayers = false) =>
+        source.NetworkId == victim.NetworkId || source.IsPlayer && source.HostileNpc || victim.IsPlayer && victim.HostileNpc ? Relationship.Excluded :
         source.LocalPlayer && victim.HostileNpc ? Relationship.LocalToHostile :
-        source.HostileNpc && victim.LocalPlayer ? Relationship.HostileToLocal : Relationship.Excluded;
+        source.HostileNpc && victim.LocalPlayer ? Relationship.HostileToLocal :
+        includeOtherPlayers && source.IsPlayer && victim.HostileNpc ? Relationship.OtherPlayerToHostile :
+        includeOtherPlayers && source.HostileNpc && victim.IsPlayer ? Relationship.HostileToOtherPlayer : Relationship.Excluded;
+    public static bool IsOutgoing(Relationship relationship) => relationship is Relationship.LocalToHostile or Relationship.OtherPlayerToHostile;
+    public static bool IsIncoming(Relationship relationship) => relationship is Relationship.HostileToLocal or Relationship.HostileToOtherPlayer;
+    public static bool IsOtherPlayer(Relationship relationship) => relationship is Relationship.OtherPlayerToHostile or Relationship.HostileToOtherPlayer;
     public static int PositiveLoss(int oldHealth, int newHealth) => (int)Math.Clamp((long)Math.Max(0, oldHealth) - Math.Max(0, newHealth), 0, int.MaxValue);
     public static bool Visible(DamageReceipt r, DisplaySettings s) => s.Enabled && r.HpLost > 0 && r.Sequence > 0 && r.Position.IsFinite &&
-        double.IsFinite(r.CapturedAt) && (r.Relationship == Relationship.LocalToHostile && s.Outgoing || r.Relationship == Relationship.HostileToLocal && s.Incoming);
+        double.IsFinite(r.CapturedAt) && (!IsOtherPlayer(r.Relationship) || s.OtherPlayers) &&
+        (IsOutgoing(r.Relationship) && s.Outgoing || IsIncoming(r.Relationship) && s.Incoming);
 }
 // One instance per executed RPC, never a time/amount deduplication key.
 public sealed class CommitLatch
@@ -71,7 +81,7 @@ public sealed class ReceiptCapture
         receipt = default;
         var frame = _current;
         if (frame is null || !frame.Eligible || frame.VictimHandle != victimHandle || !frame.Latch.TryCommit(before, after)) return false;
-        receipt = new DamageReceipt(++_sequence, frame.Source, frame.Victim, ReceiptRules.Classify(frame.Source, frame.Victim),
+        receipt = new DamageReceipt(++_sequence, frame.Source, frame.Victim, ReceiptRules.Classify(frame.Source, frame.Victim, includeOtherPlayers: true),
             ReceiptRules.PositiveLoss(before, after), frame.Position, time);
         return true;
     }

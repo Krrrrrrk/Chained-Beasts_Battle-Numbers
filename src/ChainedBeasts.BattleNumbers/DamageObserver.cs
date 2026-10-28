@@ -65,7 +65,7 @@ internal static class DamageObserver
     {
         var player = agent.TryCast<Player>();
         var local = player != null && player.IsOwner && player.OwnerClientId == player.NetworkManager.LocalClientId;
-        return new Actor(agent.NetworkObjectId, local, agent.TryCast<Enemy>() != null && !agent.IsPlayerTeam);
+        return new Actor(agent.NetworkObjectId, local, agent.TryCast<Enemy>() != null && !agent.IsPlayerTeam, player is not null);
     }
     private static void HealthCommitted(NetworkHealthObject __instance, int oldHealth, int newHealth)
     {
