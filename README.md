@@ -14,11 +14,11 @@ Made for **Chained Beasts 1.0.2 (Steam build 26231777)**.
 
 These are from an earlier version with the pixel-style numbers. The current version uses the game's HUD font by default.
 
-**Dealing damage** — pale yellow numbers above enemies.
+**Dealing damage** - pale yellow numbers above enemies.
 
 ![Pale yellow pixel damage number above an enemy](assets/screenshots/outgoing-damage.png)
 
-**Taking damage** — red numbers above your character.
+**Taking damage** - red numbers above your character.
 
 ![Red pixel damage number above the player](assets/screenshots/incoming-damage.png)
 
