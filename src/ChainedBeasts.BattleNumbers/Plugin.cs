@@ -11,7 +11,7 @@ public sealed class Plugin : BasePlugin
 {
     public const string Guid = "local.chainedbeasts.battlenumbers";
     public const string Name = "Chained Beasts Battle Numbers";
-    public const string Version = "0.3.0";
+    public const string Version = "1.0.0";
     private Harmony _harmony;
     private NumbersController _controller;
     public override void Load()
