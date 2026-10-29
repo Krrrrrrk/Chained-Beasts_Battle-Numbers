@@ -1,49 +1,65 @@
-# Battle Numbers
+# Chained Beasts: Battle Numbers
 
-Floating damage numbers for **Chained Beasts**. Pale yellow shows a player hurting an enemy; red shows an enemy hurting a player.
+I wanted floating damage numbers in **Chained Beasts**, so I made some.
 
-The numbers use the game's **Skranji HUD font**, with a **white inner outline and black outer outline**, plus a short pop, rise and fade. If that font isn't loaded, the original pixel digits are used instead. No game font files are bundled or changed.
+Hits on enemies show up in pale yellow, and damage taken by players shows up in red. The numbers pop up, float a little, then fade away. Nothing fancy, just a quick way to see how hard something actually hit.
 
-**[Download 1.0.0](https://github.com/Krrrrrrk/Chained-Beasts_Battle-Numbers/releases/tag/v1.0.0)** for **Chained Beasts 1.0.2 / Steam build 26231777**.
+By default, it uses the game's **Skranji HUD font**, with a white inner outline and black outer outline. If the font isn't available, it falls back to the original pixel-style digits.
 
-Multiplayer testing has gone well, including seeing friends deal and take damage. I still expect weird edge cases.
+**[Download Battle Numbers v1.0.0](https://github.com/Krrrrrrk/Chained-Beasts_Battle-Numbers/releases/tag/v1.0.0)**
 
-## See friends' damage
-
-**`ShowOtherPlayers = true`** by default, so I can see friends dealing and taking damage on my screen too. The host measures actual HP lost and sends cosmetic damage numbers to each viewing PC.
-
-Use **1.0.0 on the host and on each PC that wants the all-player view**. Other players' hits are included even if they do not install Battle Numbers themselves. If other gameplay mods require matching installs, their requirements still apply. A current viewer connected to a host running a version older than 0.3.0 logs a warning and receives only the older own-hits view. Older viewers on a new host also retain their own-hits view.
-
-The host's own `ShowOtherPlayers`, incoming and outgoing display preferences do not restrict what upgraded viewers can see. Set `ShowOtherPlayers = false` and restart to return to seeing only my own hits. Friendly/PvP damage is still excluded, and numbers outside the current camera view stay hidden.
+Made for **Chained Beasts 1.0.2 (Steam build 26231777)**.
 
 ## Screenshots
 
-These screenshots show the older pixel digits. The current default uses the game's HUD font.
+These are from an earlier version with the pixel-style numbers. The current version uses the game's HUD font by default.
 
-**Outgoing damage** — pale yellow numbers show HP lost by an enemy.
+**Dealing damage** — pale yellow numbers above enemies.
 
 ![Pale yellow pixel damage number above an enemy](assets/screenshots/outgoing-damage.png)
 
-**Incoming damage** — red numbers show HP lost by my player.
+**Taking damage** — red numbers above your character.
 
 ![Red pixel damage number above the player](assets/screenshots/incoming-damage.png)
 
-## Download and install
+## Installation
 
-Use **1.0.0** for game **1.0.2**. Releases through 0.2.0 target game 1.0.1.
+This mod runs on its own. You **don't** need Mod Foundation or Terms & Contusions.
 
-1. Install [BepInEx 6 build 791 — Windows x64 Unity IL2CPP](https://builds.bepinex.dev/projects/bepinex_be/791/BepInEx-Unity.IL2CPP-win-x64-6.0.0-be.791%2Bb782da4.zip) in your Chained Beasts game folder if you don't already have it.
-2. Download [ChainedBeasts.BattleNumbers.dll](https://github.com/Krrrrrrk/Chained-Beasts_Battle-Numbers/releases/download/v1.0.0/ChainedBeasts.BattleNumbers.dll) from the [1.0.0 release](https://github.com/Krrrrrrk/Chained-Beasts_Battle-Numbers/releases/tag/v1.0.0).
-3. With the game closed, put the DLL in `BepInEx/plugins/BattleNumbers/`. Create that folder if needed, and keep only one copy of the DLL.
-4. Launch the game and start or join a run. For the all-player view, use 1.0.0 on the host and on your viewing PC.
+1. Install [BepInEx 6 (IL2CPP, Windows x64, build 791)](https://builds.bepinex.dev/projects/bepinex_be/791/BepInEx-Unity.IL2CPP-win-x64-6.0.0-be.791%2Bb782da4.zip) if you haven't already. Extract it into the game folder, alongside `ChainedBeasts.exe`, and launch the game once to let BepInEx set itself up.
+2. Download [ChainedBeasts.BattleNumbers.dll](https://github.com/Krrrrrrk/Chained-Beasts_Battle-Numbers/releases/download/v1.0.0/ChainedBeasts.BattleNumbers.dll).
+3. Close the game and put the DLL in `BepInEx/plugins/BattleNumbers/`. Create the folder if it doesn't exist, and make sure you don't have a second copy of the DLL somewhere else in `plugins`.
+4. Start the game and play!
 
-This is standalone: Mod Foundation and Terms & Contusions are optional. It is cosmetic and does not change damage, health, combat, saves or network authority.
+Use **v1.0.0 for game version 1.0.2**. Releases up through v0.2.0 were made for game version 1.0.1.
 
-Inspected and built against Chained Beasts **1.0.2** (Steam build **26231777**), Unity **6000.3.21f1** and BepInEx **6.0.0-be.791+b782da4**. The mod disables itself on an uninspected GameAssembly build.
+The mod checks the game's GameAssembly build and disables itself if it doesn't recognize it. That way a game update doesn't leave it hooking into something it shouldn't.
+
+## Multiplayer
+
+Yep, you can see your friends' damage too.
+
+With `ShowOtherPlayers = true` (the default), the host checks how much HP a hit actually removed and sends cosmetic number updates to players running the mod. So you'll see both damage your friends deal and damage they take, as long as it's in your camera view.
+
+For the full multiplayer display, install **v1.0.0 on the host and on each PC that wants to see everyone's damage**. Your friends don't all need Battle Numbers just to have *their* hits show up on your screen, but the host does need it. Other gameplay mods may have their own matching-install requirements.
+
+Older versions have more limited compatibility:
+
+- A viewer on v1.0.0 with a host older than v0.3.0 gets a warning and only sees their own hits.
+- Older viewers connecting to a newer host also keep their original own-hits view.
+- A host's personal display preferences don't limit what upgraded viewers can choose to show.
+
+Want just your own hits? Change `ShowOtherPlayers = false` in the config and restart.
+
+Friendly/PvP damage isn't displayed, and numbers outside the camera view are hidden. Multiplayer has worked well in my testing so far, but I haven't covered every possible edge case.
 
 ## Settings
 
-First launch creates `BepInEx/config/local.chainedbeasts.battlenumbers.cfg`. Close the game before editing; restart to apply.
+After the first launch, you'll find the config here:
+
+`BepInEx/config/local.chainedbeasts.battlenumbers.cfg`
+
+Close the game before editing it, then restart to apply changes.
 
 ```ini
 [Display]
@@ -58,49 +74,63 @@ OutgoingColor = #FFF0A0
 IncomingColor = #FF5555
 ```
 
-Use `TextScale` to resize the numbers (0.5–2.5), and `Lifetime` to change their duration in seconds (0.25–3). Colors use `#RRGGBB`. Set `Enabled = false` to disable the mod. Optional diagnostic logging is off by default.
+Most of these are pretty self-explanatory:
 
-`UseGameFont = true` selects the native HUD font by default. Set it to `false` and restart to use the original pixel digits. The log reports when the HUD font is found, or when fallback rendering is needed. This setting only changes the appearance.
+- `ShowOutgoing` / `ShowIncoming`: choose which direction of damage to display.
+- `ShowOtherPlayers`: show friends' damage as well as your own.
+- `UseGameFont`: use the game's HUD font; turn it off for the older pixel digits. The log will tell you if the game font couldn't be loaded.
+- `TextScale`: change number size, from `0.5` to `2.5`.
+- `Lifetime`: how long numbers last, from `0.25` to `3` seconds.
+- `OutgoingColor` / `IncomingColor`: colors in `#RRGGBB` format.
+- `Enabled`: turn the mod off without removing the DLL.
 
-## Known issues and limits
+There's optional diagnostic logging too, but it's off by default.
 
-- Some hits on bosses do not show damage numbers.
-- Numbers can appear when another player hits a hallucination.
+## Known issues
 
-I'm leaving both of these as known issues and don't plan to fix them.
+Two things I know about, and at this point don't plan to fix:
 
-Other limits:
+- Some boss hits don't show numbers.
+- A number can appear when another player attacks a hallucination.
 
-- Use **1.0.0 on the host and viewing PC** for the current release. The all-player feature is compatible with 0.3.0; earlier versions retain the own-hits view. Foundation/Terms & Contusions remain optional.
-- Friendly/PvP, environmental, internal/self and unattributed damage is excluded. Some status or area effects may not retain a usable attacker identity.
-- Up to 96 numbers can be shown at once; extreme bursts replace the oldest numbers.
+A few other limitations worth mentioning:
 
-## Bug reports
+- Friendly/PvP, environmental, self-inflicted, internal, and unattributed damage aren't shown. Some status or area effects also don't have a clear attacker to associate with the hit.
+- The display holds up to **96 numbers at once**. If things get *really* hectic, the oldest numbers get replaced.
+- Battle Numbers is cosmetic. It doesn't change actual damage, HP, combat rules, saves, or who controls the game state over the network.
 
-If you submit a bug report, please attach your **`Player.log` from the session where the problem happened**. It helps me figure out what went wrong.
+## Having problems?
 
-You can find it here on Windows:
+If something breaks, please send me your `Player.log` from the session where it happened:
 
 ```text
 %USERPROFILE%\AppData\LocalLow\Featherweight Games\ChainedBeasts\Player.log
 ```
 
-For multiplayer issues, please include both the host and client logs. Also mention what you were doing when it happened and which other mods you have installed.
+For multiplayer bugs, logs from **both the host and the client** are especially useful. Let me know which other mods you had installed and what was happening at the time.
 
-## Build from source
+## Building from source
 
-Requires Windows, a .NET SDK that supports **net6.0**, and the installed game's BepInEx loader and generated `BepInEx/interop` assemblies.
+If you'd rather build it yourself, you'll need Windows, a .NET SDK that supports **net6.0**, BepInEx installed for the game, and its generated `BepInEx/interop` assemblies.
 
 ```powershell
 dotnet build src/ChainedBeasts.BattleNumbers/ChainedBeasts.BattleNumbers.csproj -c Release
 ```
 
-For a nondefault game location, set `CHAINED_BEASTS_GAME_DIR` before building. The DLL is written to `src/ChainedBeasts.BattleNumbers/bin/Release/net6.0/`. Game binaries, loader dependencies and generated bindings are not included in this repository or release.
+The DLL ends up in `src/ChainedBeasts.BattleNumbers/bin/Release/net6.0/`.
 
-## Uninstall
+If your game is installed somewhere unusual, set `CHAINED_BEASTS_GAME_DIR` before building. Game files, BepInEx dependencies, and generated interop assemblies aren't included in the repo.
 
-With the game closed, remove `BepInEx/plugins/BattleNumbers/ChainedBeasts.BattleNumbers.dll`. Optionally remove `BepInEx/config/local.chainedbeasts.battlenumbers.cfg`. No save restoration is needed; leave other mods and the loader in place.
+For reference, this was built against **Chained Beasts 1.0.2**, **Unity 6000.3.21f1**, and **BepInEx 6.0.0-be.791+b782da4**.
+
+## Uninstalling
+
+Close the game and delete `BepInEx/plugins/BattleNumbers/ChainedBeasts.BattleNumbers.dll`. You can also remove `BepInEx/config/local.chainedbeasts.battlenumbers.cfg` if you don't want to keep your settings.
+
+No save restoration needed. You can leave BepInEx and any other mods alone.
 
 ## License
 
-[MIT](LICENSE). Small BepInEx/IL2CPP hook and component patterns were adapted from [Chained Beasts Mod Foundation](https://github.com/Krrrrrrk/chained-beasts-mod-foundation), also MIT licensed, copyright (c) 2026 Krrrrrrk. The fallback pixel digit designs are original; no game fonts or assets are bundled. This is an unofficial mod.
+[MIT](LICENSE). Some BepInEx/IL2CPP hook and component patterns were adapted from my [Chained Beasts Mod Foundation](https://github.com/Krrrrrrk/chained-beasts-mod-foundation) project (also MIT, copyright © 2026 Krrrrrrk).
+
+The fallback pixel digits are my own. No game fonts or other game assets are included. This is an unofficial mod and isn't affiliated with the game developers.
