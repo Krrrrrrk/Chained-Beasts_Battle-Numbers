@@ -30,8 +30,8 @@ internal static class DamageObserver
     internal static void Install(Harmony harmony)
     {
         NativeSafety.Install(harmony, "TakeDamageRpc", new[] { typeof(int), typeof(ulong), typeof(bool), typeof(DamageType),
-            typeof(bool), typeof(bool), typeof(bool), typeof(RpcParams) }, 0x6df900, nameof(RpcBefore), nameof(RpcFinally));
-        NativeSafety.Install(harmony, "OnHealthChanged", new[] { typeof(int), typeof(int) }, 0x6df310, nameof(HealthCommitted));
+            typeof(bool), typeof(bool), typeof(bool), typeof(RpcParams) }, 0x6df910, nameof(RpcBefore), nameof(RpcFinally));
+        NativeSafety.Install(harmony, "OnHealthChanged", new[] { typeof(int), typeof(int) }, 0x6df320, nameof(HealthCommitted));
     }
     private static void RpcBefore(NetworkHealthObject __instance, ulong damageSourceID, bool isInternalDamageSource, out ReceiptCapture.Frame __state)
     {
