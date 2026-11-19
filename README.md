@@ -1,6 +1,6 @@
 # Chained Beasts: Battle Numbers
 
-Updated for the Chained Beasts 1.0.2 hotfix, Steam build **26369255**. In-game and multiplayer retesting is still pending.
+Updated for **Chained Beasts 1.0.3, Steam build 26775394**. Built against fresh game bindings; the game was not launched for this update.
 
 I wanted floating damage numbers in **Chained Beasts**, so I made some.
 
@@ -8,9 +8,9 @@ Hits on enemies show up in pale yellow, and damage taken by players shows up in 
 
 By default, it uses the game's **Skranji HUD font**, with a white inner outline and black outer outline. If the font isn't available, it falls back to the original pixel-style digits.
 
-**[Download Battle Numbers v1.0.1](https://github.com/Krrrrrrk/Chained-Beasts_Battle-Numbers/releases/tag/v1.0.1)**
+**[Download Battle Numbers v1.0.2](https://github.com/Krrrrrrk/Chained-Beasts_Battle-Numbers/releases/tag/v1.0.2)**
 
-Made for **Chained Beasts 1.0.2 (Steam build 26369255)**.
+Made for **Chained Beasts 1.0.3 (Steam build 26775394)**.
 
 ## Screenshots
 
@@ -29,7 +29,7 @@ These are from an earlier version with the pixel-style numbers. The current vers
 This mod runs on its own. You **don't** need Mod Foundation or Terms & Contusions.
 
 1. Install [BepInEx 6 (IL2CPP, Windows x64, build 791)](https://builds.bepinex.dev/projects/bepinex_be/791/BepInEx-Unity.IL2CPP-win-x64-6.0.0-be.791%2Bb782da4.zip) if you haven't already. Extract it into the game folder, alongside `ChainedBeasts.exe`, and launch the game once to let BepInEx set itself up.
-2. Download [ChainedBeasts.BattleNumbers.dll](https://github.com/Krrrrrrk/Chained-Beasts_Battle-Numbers/releases/download/v1.0.1/ChainedBeasts.BattleNumbers.dll).
+2. Download [ChainedBeasts.BattleNumbers.dll](https://github.com/Krrrrrrk/Chained-Beasts_Battle-Numbers/releases/download/v1.0.2/ChainedBeasts.BattleNumbers.dll).
 3. Close the game and put the DLL in `BepInEx/plugins/BattleNumbers/`. Create the folder if it doesn't exist, and make sure you don't have a second copy of the DLL somewhere else in `plugins`.
 4. Start the game and play!
 
@@ -123,7 +123,7 @@ The DLL ends up in `src/ChainedBeasts.BattleNumbers/bin/Release/net6.0/`.
 
 If your game is installed somewhere unusual, set `CHAINED_BEASTS_GAME_DIR` before building. Game files, BepInEx dependencies, and generated interop assemblies aren't included in the repo.
 
-For reference, this was built against **Chained Beasts 1.0.2**, **Unity 6000.3.21f1**, and **BepInEx 6.0.0-be.791+b782da4**.
+For reference, this was built against **Chained Beasts 1.0.3**, **Unity 6000.3.21f1**, and **BepInEx 6.0.0-be.791+b782da4**.
 
 ## Uninstalling
 
